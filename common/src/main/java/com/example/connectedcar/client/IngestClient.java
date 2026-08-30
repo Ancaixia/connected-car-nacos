@@ -2,8 +2,8 @@ package com.example.connectedcar.client;
 
 import com.example.connectedcar.domain.AlarmEvent;
 import com.example.connectedcar.domain.DashboardSummary;
+import com.example.connectedcar.domain.LoginResult;
 import com.example.connectedcar.domain.Telemetry;
-import com.example.connectedcar.domain.User;
 import com.example.connectedcar.domain.Vehicle;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,7 @@ public interface IngestClient {
 
     /** 校验用户名密码（登录链路跨服务调用）。 */
     @PostMapping("/api/internal/auth/validate")
-    Map<String, Object> validateLogin(@RequestBody Map<String, String> req);
+    LoginResult validateLogin(@RequestBody Map<String, String> req);
 
     @GetMapping("/api/internal/vehicles")
     List<Vehicle> listVehicles();

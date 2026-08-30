@@ -32,7 +32,11 @@ logging:
   level:
     com.example.connectedcar: INFO
 
+# 内部服务调用共享密钥，需与 query-service 的 app.internal.token 一致。
+# 为空表示不启用校验（本地裸跑）；部署时建议通过环境变量 INTERNAL_TOKEN 注入。
 app:
+  internal:
+    token: ${INTERNAL_TOKEN:}
   simulator:
     interval-ms: 1000
   pipeline:

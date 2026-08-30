@@ -61,7 +61,7 @@ public class AuthController {
         User user = authService.verify(token);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("success", false, "message", -1));
+                    .body(Map.of("success", false, "message", "未登录或会话已过期"));
         }
         return ResponseEntity.ok(Map.of("success", true, "user", user));
     }

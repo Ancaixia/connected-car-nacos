@@ -1,6 +1,7 @@
 package com.example.connectedcar.service;
 
 import com.example.connectedcar.client.IngestClient;
+import com.example.connectedcar.domain.LoginResult;
 import com.example.connectedcar.domain.User;
 import com.example.connectedcar.storage.AuthCache;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,12 @@ public class AuthService {
         Map<String, String> req = new HashMap<>();
         req.put("username", username);
         req.put("password", password);
-        Map<String, Object> result = ingestClient.validateLogin(req);
-        if (result == null || !Boolean.TRUE.equals(result.get("valid"))) {
+        LoginResult result = ingestClient.validateLogin(req);
+        if (result == null || !result.isValid() || result.getUser() == null) {
             return null;
         }
-        User user = (User) result.get("user");
         String token = UUID.randomUUID().toString().replace("-", "");
-        authCache.saveSession(token, user);
+        authCache.saveSession(token, result.getUser());
         return token;
     }
 

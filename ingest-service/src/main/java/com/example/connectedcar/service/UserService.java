@@ -1,12 +1,10 @@
 package com.example.connectedcar.service;
 
-import com.example.connectedcar.domain.User;
+import com.example.connectedcar.domain.LoginResult;
 import com.example.connectedcar.storage.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * 账号校验服务（采集服务侧）。
@@ -27,18 +25,17 @@ public class UserService {
     /**
      * 校验用户名密码。
      *
-     * @return 成功返回包含 valid=true 与 user 的 Map；失败 valid=false
+     * @return 成功返回 valid=true 且带 user 的结果；失败 valid=false
      */
-    public Map<String, Object> validateLogin(String username, String password) {
+    public LoginResult validateLogin(String username, String password) {
         UserRepository.UserRow row = userRepository.findByUsername(username).orElse(null);
         if (row == null || !matches(row.password, password)) {
-            return Map.of("valid", false);
+            return LoginResult.fail();
         }
         if (isPlain(row.password)) {
             userRepository.upgradePassword(username, passwordEncoder.encode(password));
         }
-        User user = row.toUser();
-        return Map.of("valid", true, "user", user);
+        return LoginResult.ok(row.toUser());
     }
 
     private boolean isPlain(String stored) {

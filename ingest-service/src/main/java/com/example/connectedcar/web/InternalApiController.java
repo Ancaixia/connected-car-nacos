@@ -2,8 +2,8 @@ package com.example.connectedcar.web;
 
 import com.example.connectedcar.domain.AlarmEvent;
 import com.example.connectedcar.domain.DashboardSummary;
+import com.example.connectedcar.domain.LoginResult;
 import com.example.connectedcar.domain.Telemetry;
-import com.example.connectedcar.domain.User;
 import com.example.connectedcar.domain.Vehicle;
 import com.example.connectedcar.service.AlarmService;
 import com.example.connectedcar.service.StatsService;
@@ -49,7 +49,7 @@ public class InternalApiController {
     }
 
     @PostMapping("/auth/validate")
-    public Map<String, Object> validateLogin(@RequestBody Map<String, String> req) {
+    public LoginResult validateLogin(@RequestBody Map<String, String> req) {
         String username = req.get("username");
         String password = req.get("password");
         return userService.validateLogin(username, password);
