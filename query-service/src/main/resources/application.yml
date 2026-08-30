@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: query-service
+  data:
+    redis:
+      host: 192.168.1.209
+      port: 6379
+      password: ancaixia
+      database: 0
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.84:8848
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    com.example.connectedcar: INFO
+
+# OpenFeign / LoadBalancer 相关超时（避免默认 1s 不够）
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 3000
+        read-timeout: 5000
+
+spring.cloud.loadbalancer:
+  retry:
+    enabled: false

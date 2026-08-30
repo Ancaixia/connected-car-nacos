@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 · 车联网云端数据平台</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .login-wrap {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #0c1330 0%, #102a43 100%);
+            font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+        .login-card {
+            width: 380px; background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255, 0.12); border-radius: 16px;
+            padding: 40px 34px; backdrop-filter: blur(8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .login-card h2 { color: #e6f1ff; margin: 0 0 6px; font-size: 22px; }
+        .login-card .sub { color: #8aa6c8; font-size: 13px; margin-bottom: 26px; }
+        .login-field { margin-bottom: 18px; }
+        .login-field label { display: block; color: #b8ccdf; font-size: 13px; margin-bottom: 6px; }
+        .login-field input {
+            width: 100%; padding: 11px 13px; border-radius: 9px;
+            border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.05);
+            color: #e6f1ff; font-size: 14px; box-sizing: border-box;
+        }
+        .login-field input:focus { outline: none; border-color: #22d3ee; }
+        .login-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 9px; cursor: pointer;
+            background: linear-gradient(135deg, #22d3ee, #3b82f6); color: #04162b;
+            font-size: 15px; font-weight: 600; margin-top: 6px;
+        }
+        .login-btn:disabled { opacity: 0.6; cursor: default; }
+        .login-msg { margin-top: 14px; font-size: 13px; min-height: 18px; }
+        .login-msg.err { color: #f87171; }
+        .login-msg.ok { color: #34d399; }
+        .login-hint { margin-top: 18px; color: #6b87a8; font-size: 12px; line-height: 1.6; }
+        .login-hint code { color: #22d3ee; background: rgba(34,211,238,0.1); padding: 1px 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div id="login" class="login-wrap">
+    <div class="login-card">
+        <h2>🚗 车联网数据平台</h2>
+        <div class="sub">Connected Car Cloud · 运营后台登录</div>
+        <div class="login-field">
+            <label>用户名（车辆 VIN）</label>
+            <input id="username" placeholder="如 LSVAA2180C2000001" autocomplete="username">
+        </div>
+        <div class="login-field">
+            <label>密码</label>
+            <input id="password" type="password" placeholder="默认密码 123456" autocomplete="current-password">
+        </div>
+        <button id="loginBtn" class="login-btn">登 录</button>
+        <div id="msg" class="login-msg"></div>
+        <div class="login-hint">
+            演示账号：任一车辆 VIN（见下表） / 密码 <code>123456</code><br>
+            例如：<code>LSVAA2180C2000001</code>
+        </div>
+    </div>
+</div>
+<script src="/login.js"></script>
+</body>
+</html>

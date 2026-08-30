@@ -1,0 +1,43 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ingest-service
+  datasource:
+    url: jdbc:h2:mem:connectedcar;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  data:
+    redis:
+      host: 192.168.1.209
+      port: 6379
+      password: ancaixia
+      database: 0
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.84:8848
+
+logging:
+  level:
+    com.example.connectedcar: INFO
+
+app:
+  simulator:
+    interval-ms: 1000
+  pipeline:
+    window-seconds: 60
+  alarm:
+    speed-limit: 160.0
+    fuel-low-limit: 5.0
+    engine-temp-limit: 95.0
