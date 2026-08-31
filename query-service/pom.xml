@@ -28,6 +28,15 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+        <!--
+          OpenFeign 按服务名调用时必须有负载均衡器。Spring Cloud 2020 起 Ribbon 被移除，
+          nacos-discovery 只是 optional 依赖它，不会传递进来，必须显式声明，
+          否则启动报：No Feign Client for loadBalancing defined.
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

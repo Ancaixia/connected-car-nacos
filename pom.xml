@@ -92,16 +92,11 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <!-- 父工程不是可运行应用，跳过 repackage -->
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <!--
+      注意：这里不要声明 spring-boot-maven-plugin。
+      <build><plugins> 中的插件会被所有子模块继承，而 common 只是普通 jar 依赖、
+      没有 main 主类，repackage 会直接失败。
+      正确做法是仅由需要打成可执行 jar 的模块（ingest-service / query-service）
+      各自声明该插件。
+    -->
 </project>
