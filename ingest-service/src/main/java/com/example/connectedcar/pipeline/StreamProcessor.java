@@ -1,5 +1,6 @@
 package com.example.connectedcar.pipeline;
 
+import com.example.connectedcar.config.AppProperties;
 import com.example.connectedcar.domain.AlarmEvent;
 import com.example.connectedcar.domain.Telemetry;
 import com.example.connectedcar.gateway.MqttMessage;
@@ -10,7 +11,6 @@ import com.example.connectedcar.storage.VehicleRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -41,25 +41,20 @@ public class StreamProcessor {
 
     private final Map<String, Boolean> alarmActive = new ConcurrentHashMap<>();
 
-    @Value("${app.alarm.speed-limit}")
-    private double speedLimit;
-
-    @Value("${app.alarm.fuel-low-limit}")
-    private double fuelLowLimit;
-
-    @Value("${app.alarm.engine-temp-limit}")
-    private double engineTempLimit;
+    private final AppProperties appProperties;
 
     public StreamProcessor(KafkaBroker kafkaBroker,
                            TelemetryRepository telemetryRepository,
                            AlarmRepository alarmRepository,
                            VehicleRepository vehicleRepository,
-                           VehicleCache vehicleCache) {
+                           VehicleCache vehicleCache,
+                           AppProperties appProperties) {
         this.kafkaBroker = kafkaBroker;
         this.telemetryRepository = telemetryRepository;
         this.alarmRepository = alarmRepository;
         this.vehicleRepository = vehicleRepository;
         this.vehicleCache = vehicleCache;
+        this.appProperties = appProperties;
     }
 
     @PostConstruct
@@ -105,17 +100,21 @@ public class StreamProcessor {
     }
 
     private void detectAlarms(Telemetry t) {
-        if (shouldFire("SPEEDING:" + t.getVin(), t.getSpeed() > speedLimit)) {
+        // 每条数据都实时读取，Nacos 上改了阈值可立即生效。
+        // 注意：不要把这些值再缓存到本类字段，否则会退化成启动时的固定值。
+        AppProperties.Alarm cfg = appProperties.getAlarm();
+
+        if (shouldFire("SPEEDING:" + t.getVin(), t.getSpeed() > cfg.getSpeedLimit())) {
             saveAlarm(t, "SPEEDING", "HIGH",
-                    String.format("车速 %.0f km/h 超过限速 %.0f km/h", t.getSpeed(), speedLimit),
+                    String.format("车速 %.0f km/h 超过限速 %.0f km/h", t.getSpeed(), cfg.getSpeedLimit()),
                     t.getSpeed());
         }
-        if (shouldFire("LOW_FUEL:" + t.getVin(), t.getFuelPct() < fuelLowLimit)) {
+        if (shouldFire("LOW_FUEL:" + t.getVin(), t.getFuelPct() < cfg.getFuelLowLimit())) {
             saveAlarm(t, "LOW_FUEL", "MEDIUM",
                     String.format("油量剩余 %.1f%%，请及时加油", t.getFuelPct()),
                     t.getFuelPct());
         }
-        if (shouldFire("HIGH_TEMP:" + t.getVin(), t.getEngineTemp() > engineTempLimit)) {
+        if (shouldFire("HIGH_TEMP:" + t.getVin(), t.getEngineTemp() > cfg.getEngineTempLimit())) {
             saveAlarm(t, "HIGH_TEMP", "HIGH",
                     String.format("发动机温度 %.1f°C 过高，存在热失控风险", t.getEngineTemp()),
                     t.getEngineTemp());

@@ -1,5 +1,6 @@
 package com.example.connectedcar.web;
 
+import com.example.connectedcar.config.AppProperties;
 import com.example.connectedcar.domain.AlarmEvent;
 import com.example.connectedcar.domain.DashboardSummary;
 import com.example.connectedcar.domain.LoginResult;
@@ -35,17 +36,20 @@ public class InternalApiController {
     private final AlarmService alarmService;
     private final StatsService statsService;
     private final UserService userService;
+    private final AppProperties appProperties;
 
     public InternalApiController(VehicleService vehicleService,
                                  TelemetryService telemetryService,
                                  AlarmService alarmService,
                                  StatsService statsService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 AppProperties appProperties) {
         this.vehicleService = vehicleService;
         this.telemetryService = telemetryService;
         this.alarmService = alarmService;
         this.statsService = statsService;
         this.userService = userService;
+        this.appProperties = appProperties;
     }
 
     @PostMapping("/auth/validate")
@@ -90,5 +94,20 @@ public class InternalApiController {
     @GetMapping("/dashboard/pipeline")
     public Map<String, Object> dashboardPipeline() {
         return statsService.pipeline();
+    }
+
+    /**
+     * 当前生效的报警阈值（用于验证 Nacos 配置热更新）。
+     *
+     * <p>在 Nacos 控制台修改 app.alarm.* 并发布后，刷新本接口，
+     * 若返回新值即说明热更新生效，无需重启 ingest-service。
+     */
+    @GetMapping("/config/alarm")
+    public Map<String, Object> alarmConfig() {
+        AppProperties.Alarm cfg = appProperties.getAlarm();
+        return Map.of(
+                "speedLimit", cfg.getSpeedLimit(),
+                "fuelLowLimit", cfg.getFuelLowLimit(),
+                "engineTempLimit", cfg.getEngineTempLimit());
     }
 }
