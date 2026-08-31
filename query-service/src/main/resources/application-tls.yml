@@ -1,0 +1,30 @@
+# ===================================================================
+# 边缘 TLS 配置（可选 profile，默认不激活，不影响现有 HTTP 部署）
+# ===================================================================
+#
+# 加密范围：浏览器 → query-service。登录密码在这一段不再明文传输。
+#
+# query-service → ingest-service 仍走内网 HTTP，由 X-Internal-Token 保护。
+# 这是常见的「边缘 TLS 终结」做法：内网段可信，只对公网入口加密。
+# 若要求全链路加密，需对 ingest-service 也启用 TLS，并让 Feign 信任其证书。
+#
+# 启用步骤：
+#   1) 生成自签证书（证书与私钥严禁提交版本库，已在 .gitignore 中排除）
+#        keytool -genkeypair -alias connectedcar -keyalg RSA -keysize 2048 ^
+#                -validity 365 -storetype PKCS12 -keystore cert/keystore.p12 ^
+#                -storepass changeit -dname "CN=localhost"
+#   2) 启动时激活 profile
+#        java -jar query-service.jar --spring.profiles.active=tls
+#
+# 启用后前端访问地址变为 https://<host>:8443（端口可用 TLS_PORT 覆盖）。
+# 生产环境建议使用 CA 签发证书替换自签证书。
+server:
+  port: ${TLS_PORT:8443}
+  ssl:
+    enabled: true
+    key-store: ${TLS_KEY_STORE:file:cert/keystore.p12}
+    key-store-type: ${TLS_KEY_STORE_TYPE:PKCS12}
+    key-store-password: ${TLS_KEY_STORE_PASSWORD:changeit}
+    key-alias: ${TLS_KEY_ALIAS:connectedcar}
+    protocol: TLS
+    enabled-protocols: TLSv1.2,TLSv1.3

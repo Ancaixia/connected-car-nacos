@@ -33,6 +33,15 @@ failsafe-reports/
 *.trace.db
 *.h2.db
 
+# ============ TLS 证书与私钥（严禁入库） ============
+cert/
+*.p12
+*.jks
+*.keystore
+*.pfx
+*.key
+*.pem
+
 # ============ 环境变量 / 本地覆盖配置 ============
 .env
 *.env
