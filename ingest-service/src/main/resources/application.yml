@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: ingest-service
+  # 从 Nacos 配置中心导入 ingest-service.yml（optional: 表示配置中心不可用时不阻断启动）。
+  # 导入的配置优先级高于本文件，本文件中的同名项作为兜底值。
+  config:
+    import:
+      - optional:nacos:ingest-service.yml
   datasource:
     url: jdbc:h2:mem:connectedcar;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
@@ -27,6 +32,11 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:192.168.1.84:8848}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:192.168.1.84:8848}
+        group: DEFAULT_GROUP
+        file-extension: yml
+        refresh-enabled: true
 
 logging:
   level:

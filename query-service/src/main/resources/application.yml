@@ -5,6 +5,12 @@ server:
 spring:
   application:
     name: query-service
+  # 从 Nacos 配置中心导入 query-service.yml。
+  # optional: 前缀表示配置中心不可用时不阻断启动，用本文件中的同名配置兜底。
+  # 导入的配置优先级高于本文件，因此本文件里的同名项相当于默认值。
+  config:
+    import:
+      - optional:nacos:query-service.yml
   data:
     redis:
       host: ${REDIS_HOST:192.168.1.209}
@@ -15,6 +21,11 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:192.168.1.84:8848}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:192.168.1.84:8848}
+        group: DEFAULT_GROUP
+        file-extension: yml
+        refresh-enabled: true
     loadbalancer:
       retry:
         enabled: false
